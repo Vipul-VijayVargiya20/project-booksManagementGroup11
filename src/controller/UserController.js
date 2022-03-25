@@ -33,8 +33,8 @@ const createUser = async function (req, res) {
         if (!isValid(data.phone))
             return res.status(400).send({ status: false, msg: "phone is required" })
         const alreadyExsit = await UserModel.findOne({ phone: data.phone })
-        if (alreadyExsit) {
-            return res.status(400).send({ status: false, msg: "phone already exit" })
+        if (alreadyExist) {
+            return res.status(400).send({ status: false, msg: "phone already exist" })
         }
 
         if (isValid(data.email))
@@ -46,7 +46,7 @@ const createUser = async function (req, res) {
         
         let alreadyExistEmail = await UserModel.findOne({ email: data.email })
         if (alreadyExistEmail) {
-            return res.status(400).send({ status: false, msg: "email already exit" })
+            return res.status(400).send({ status: false, msg: "email already exist" })
         }
 
         if (!isValid(data.password)) {
