@@ -6,7 +6,7 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-mongoose.connect("mongodb+srv://vipulvj19234:W0Q0qCoUzZOjj6nu@cluster0.rxqi0.mongodb.net/opentointernproject-db?authSource=admin&replicaSet=atlas-w6rrrs-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true", {
+mongoose.connect("mongodb+srv://vipulvj19234:W0Q0qCoUzZOjj6nu@cluster0.rxqi0.mongodb.net/group11Database-db?authSource=admin&replicaSet=atlas-w6rrrs-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true", {
     useNewUrlParser: true
 })
     .then(() => console.log("MongoDb is connected"))

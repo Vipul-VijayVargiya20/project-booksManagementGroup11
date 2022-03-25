@@ -1,5 +1,5 @@
-const internmodel=require("../model/internModel")
-const collegemodel=require("../model/collegeModel")
+const internmodel=require("../model/bookModel")
+const collegemodel=require("../model/userModel")
 const validator = require('../validation/validation');
 
 

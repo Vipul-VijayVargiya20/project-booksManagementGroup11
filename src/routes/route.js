@@ -1,18 +1,25 @@
 const express = require('express');
 const router = express.Router();
-const CollegeController=require("../controller/collegeController")
-const InternController=require("../controller/internController")
+const userController=require("../controller/UserController")
+const bookController=require("../controller/BookController")
 
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-router.post("/functionup/colleges",CollegeController.createCollege )
+router.post("/register",userController.createUser)
 
-router.post("/functionup/interns", InternController.createIntern)
+router.post("/login",userController.loginUser)
 
-router.get("/functionup/collegeDetails", InternController.getCollegeDetails)
+// router.post("/books/:bookId/review" )
 
+// router.get(" /books")
+
+// router.get("/books/:bookId")
+// router.put("/books/:bookId" 
+// router.put("/books/:bookId/review/:reviewId")
+// router.delete("/books/:bookId")
+// router.delete("/books/:bookId/review/:reviewId")
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
