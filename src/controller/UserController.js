@@ -45,7 +45,11 @@ const createUser = async function (req, res) {
               return res.status(400).send({ status: false, msg: "please enter a valid phone number" })
         if (!isValid(data.phone))
             return res.status(400).send({ status: false, msg: "phone is required" })
+<<<<<<< HEAD
         const alreadyExist = await UserModel.findOne({ phone: data.phone })
+=======
+        const alreadyExsit = await UserModel.findOne({ phone: data.phone })
+>>>>>>> d3b275d3dcebf89914225c35c6e5b872cee6ddeb
         if (alreadyExist) {
             return res.status(400).send({ status: false, msg: "phone already exist" })
         }
