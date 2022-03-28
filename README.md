@@ -1,4 +1,4 @@
-# Thorium
+<!-- # Thorium
 # project-BooksManagementGroup11
 Members-
  1.Vipul VijayVargiya
@@ -302,25 +302,25 @@ Refer below sample
 }
 ```
 
-### Book details response no reviews
-```yaml
-{
-  status: true,
-  message: 'Books list',
-  data: {
-    "_id": ObjectId("88abc190ef0288abc190ef55"),
-    "title": "How to win friends and influence people",
-    "excerpt": "book body",
-    "userId": ObjectId("88abc190ef0288abc190ef02")
-    "category": "Book",
-    "subcategory": "Non fiction", "Self Help"],
-    "deleted": false,
-    "reviews": 0,
-    "deletedAt": "", // if deleted is true deletedAt will have a date 2021-09-17T04:25:07.803Z,
-    "releasedAt": "2021-09-17"
-    "createdAt": "2021-09-17T04:25:07.803Z",
-    "updatedAt": "2021-09-17T04:25:07.803Z",
-    "reviewsData": []
-  }
-}
-```
+Book details response no reviews
+yaml
+# {
+#   status: true,
+#   message: 'Books list',
+#   data: {
+#     "_id": ObjectId("88abc190ef0288abc190ef55"),
+#     "title": "How to win friends and influence people",
+#     "excerpt": "book body",
+#     "userId": ObjectId("88abc190ef0288abc190ef02")
+#     "category": "Book",
+#     "subcategory": "Non fiction", "Self Help"],
+#     "deleted": false,
+#     "reviews": 0,
+#     "deletedAt": "", // if deleted is true deletedAt will have a date 2021-09-17T04:25:07.803Z,
+#     "releasedAt": "2021-09-17"
+#     "createdAt": "2021-09-17T04:25:07.803Z",
+#     "updatedAt": "2021-09-17T04:25:07.803Z",
+#     "reviewsData": []
+#   }
+# }
+ -->

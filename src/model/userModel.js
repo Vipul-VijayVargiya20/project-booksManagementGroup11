@@ -9,54 +9,54 @@ const UserSchema = new mongoose.Schema({
         enum: ["Mr", "Mrs", "Miss"],
         trim: true,
     },
-
-    name: {
+  name: {
         type: String,
         required: true, 
         trim: true,
     },
-
-    phone: {
+  phone: {
         type: Number,
         required: true,
         match: [/^([+]\d{10})?\d{15}$/, "Enter 10 Digit Valid Mobile Number"],
-        unique: true
-
-
-    },
-
-        email: {
-            type:String,
+        unique: true,
+        trim:true
+      },
+  email: {
+          type:String,
             required:true,
             match: [/^\w+([\.-]?\w+)@\w+([\. -]?\w+)(\.\w{2,3})+$/, 'Please fill a valid email address'], 
             unique:true, 
-            lowercase : true
+            lowercase : true,
+            trim:true
         },
 
     password: {
         type: String,
+        trim:true,
         required: true,
          minLen: 8, 
          maxLen :15
         },
-
-    address: {
+address: {
       street: {
           type: String,
-          trim: true
+          trim: true,
+          required: true
     },
-      city: {
+    city: {
         type: String,
-        trim: true
+        trim: true,
+        required: true
       },
       pincode: {
           type: String,
-          trim: true
+          trim: true,
+          required: true
       },
+      
     },
- },
-  {timestamp : true}
-  )
+    
+ },{timestamps:true});
 
   
-module.exports = mongoose.model('Createuser', UserSchema)
+module.exports = mongoose.model('User', UserSchema)

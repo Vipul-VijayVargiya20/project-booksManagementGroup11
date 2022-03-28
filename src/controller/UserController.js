@@ -20,21 +20,34 @@ const createUser = async function (req, res) {
         if (!isValidRequestBody(data))
             return res.status(400).send({ status: false, msg: "Please Enter some data" })
         if (!isValid(data.title)) {
-            return res.status(400).send({ status: false, msg: "Title is Required" })
+            return res.status(400).send({ status: false, msg: "title is Required" })
         }
         
         if (!isValid(data.name)) {
-            return res.status(400).send({ status: false, msg: "Name is Required" })
+            return res.status(400).send({ status: false, msg: "name is Required" })
         }
         if (isValid(data.phone))
-
-            if (!(/^([+]\d{2})?\d{10}$/.test(data.phone)))
+ if (!(/^([+]\d{2})?\d{10}$/.test(data.phone)))
                 return res.status(400).send({ status: false, msg: "Please Enter  a Valid Phone Number" })
+
+     function checkIndianNumber(b)   
+       {  var a = /^[6-9]\d{9}$/gi;  
+        if (a.test(b))   
+        {  return true;  
+                }   
+              else  
+            {  
+              return false; 
+             }  
+              };
+     let phoneCheck =checkIndianNumber(phone);
+              if (phoneCheck == false)
+              return res.status(400).send({ status: false, msg: "please enter a valid phone number" })
         if (!isValid(data.phone))
             return res.status(400).send({ status: false, msg: "phone is required" })
-        const alreadyExsit = await UserModel.findOne({ phone: data.phone })
-        if (alreadyExsit) {
-            return res.status(400).send({ status: false, msg: "phone already exit" })
+        const alreadyExist = await UserModel.findOne({ phone: data.phone })
+        if (alreadyExist) {
+            return res.status(400).send({ status: false, msg: "phone already exist" })
         }
 
         if (isValid(data.email))
@@ -46,7 +59,7 @@ const createUser = async function (req, res) {
         
         let alreadyExistEmail = await UserModel.findOne({ email: data.email })
         if (alreadyExistEmail) {
-            return res.status(400).send({ status: false, msg: "email already exit" })
+            return res.status(400).send({ status: false, msg: "email already exist" })
         }
 
         if (!isValid(data.password)) {
@@ -81,14 +94,10 @@ if (Object.keys(body) != 0) {
             if (!(/^[a-zA-Z0-9!@#$%^&*]{8,15}$/.test(passwords))) {
                 return res.status(400).send({ status: false, msg: "please provide valid password with one uppercase letter ,one lowercase, one character and one number " })
             }
-
-
-
-            let user = await UserModel.findOne({ email: userName, password: passwords });
+ let user = await UserModel.findOne({ email: userName, password: passwords });
 
             if (!user) {
-
-                return res.status(400).send({
+return res.status(400).send({
                     status: false,
                     ERROR: "username or the password is not correct",
                 });

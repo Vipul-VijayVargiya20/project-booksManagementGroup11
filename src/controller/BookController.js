@@ -1,125 +1,149 @@
-const internmodel=require("../model/bookModel")
-const collegemodel=require("../model/userModel")
-const validator = require('../validation/validation');
+const bookModel = require("../model/bookModel")
+const userModel = require("../model/userModel")
+const reviewModel = require("../model/reviewModel")
+const ObjectId = require("mongoose").Types.ObjectId
 
+const isValid = function (value) {
+    if (typeof value == undefined || value == null) return false
+    if (typeof value === 'string' && value.trim().length === 0) return false
+    return true
+}
+const createBook = async function (req, res) {
+try {
+    const data = req.body
+    const { title, category, subcategory, ISBN, excerpt, reviews, ReleasedAt } = data
+  if (Object.keys(data) == 0) return res.status(400).send({ status: false, messag: "please provide data" })
+const user_Id = data.userId
+let validUser = await userModel.findById(user_Id)
 
-const createIntern = async function (req, res) {
-  
-    try {
-         let data = req.body
-         if (Object.keys(data).length == 0){return res.status(400).send({ status: false, msg: "Bad request, No data provided." })};
+if (!isValid(user_Id)) { return res.status(400).send({ status: false, msg: "user Id is required" }) }
+if (!ObjectId.isValid(validUser)) { return res.status(400).send({ status: false, msg: "Please provide a valid user Id" }) }
 
-         const{ name, email, mobile, collegeId, isDeleted} = data
+if (Object.keys(data) == 0) return res.status(400).send({ status: false, ERROR: "No data provided" })
 
-         // For name required true:
-         if (!validator.isValid(name)){ return res.status(400).send({ status: false, msg: "Intern name is required" }) }
+if (!isValid(title)) { return res.status(400).send({ status: false, msg: "title name is required" }) }
 
-         // For email required true:
-         if (!validator.isValid(email)){ return res.status(400).send({ status: false, msg: "email is required" })}
+let duplicateTitle = await bookModel.findOne({ title });
+if (duplicateTitle) {
+return res.status(400).send({ status: false, message: "Title is already in use" })
+  }
+if (!isValid(excerpt)) { return res.status(400).send({ status: false, msg: "excerpt is required" }) }
+if (!isValid(ISBN)) { return res.status(400).send({ status: false, msg: "isbn is required" }) }
+//if (!/\b(?:ISBN(?:: ?| ))?((?:97[89])?\d{9}[\dx])\b/.test(data.ISBN)) return res.status(400).send({ status: false, msg: "ISBN is not valid"})
+let duplicateISBN = await bookModel.findOne({ ISBN });
+if (duplicateISBN) {
+return res.status(400).send({ status: false, message: "ISBN is already in use" })
+}
+if (!isValid(category)) { return res.status(400).send({ status: false, msg: "category is required" }) }
+if (!isValid(subcategory)) { return res.status(400).send({ status: false, msg: "subcategory is required" }) }
+if (!isValid(reviews)) { return res.status(400).send({ status: false, msg: "reviews is required" }) }
+if (!isValid(ReleasedAt)) { return res.status(400).send({ status: false, msg: "releasedAt is required" }) }
+if (!/((\d{4}[\/-])(\d{2}[\/-])(\d{2}))/.test(ReleasedAt)) {
+return res.status(400).send({ status: false, message: ' \"YYYY-MM-DD\" this Date format & only number format is accepted ' })
+}
+let savedData = await bookModel.create(data);
+return res.status(201).send({ status: true, data: savedData, msg: "successfull" });
+} catch (err) {
 
-         // For a valid email:
-         if (!(/^\w+([\.-]?\w+)@\w+([\. -]?\w+)(\.\w{2,3})+$/.test(data.email))){
-              return res.status(400).send({ status:false, msg: 'Not a valid email'})
-         }
+return res.status(500).send({ status: false, ERROR: err.message })
 
-         // For email unique true:
-         let duplicateEmail  = await internmodel.findOne({email:data.email})
-         if(duplicateEmail){return res.status(400).send({ status:false, msg: "email already exists"})}
-
-         // For Mobile No. required true:
-        let mobileCheck = checkIndianNumber(mobile);
-        if(mobileCheck==false) return res.status(400).send({status:false, message:"Please enter a valid mobile number"})
-         if (!validator.isValid(mobile)){ return res.status(400).send({ status: false, msg: "Mobile No. is required" })}
-
-         // For a valid Mobile No.:
-         if (!(/^([+]\d{2})?\d{10}$/.test(data.mobile))){
-          return res.status(400).send({ status:false, msg: 'Not a valid mobile number'})
-        }
-        
-          // let mobile= data.mobile; 
-          function checkIndianNumber(b)   
-       {  
-       var a = /^[6-9]\d{9}$/gi;  
-        if (a.test(b))   
-        {  
-            return true;  
-                }   
-              else   
-            {  
-              return false; 
-             }  
-              };
-
-
-         // For Mobile No. unique true:
-         let duplicateMobile  = await internmodel.findOne({mobile:data.mobile})
-         if(duplicateMobile){return res.status(400).send({ status:false, msg: "Mobile number already exists"})}
-
-         // Checking college id :
-         let id = req.body.collegeId
-         if(!id){ return res.status(404).send({status:false, msg:"Collegeid should be in the body."})}
-
-         // Finding college according to college Id :
-         let idMatch = await collegemodel.findById(id)
-         if (!idMatch){return res.status(404).send({ status: false, msg: "No such college present in the database" })}
-
-         // Creating Intern :
-         const createIntern = await internmodel.create(data);
-         res.status(201).send({ status: true, message: "Intern is  successfully created", data: createIntern })
-   }
-
-   catch (error) {
-        res.status(500).send({ status: false, msg: error.message })
-   }
- };
+}
+}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-const getCollegeDetails = async function (req, res) {
-
-        try {
-          let interns = []
-          let result = {}
-          let collegeName = req.query.collegename
-      
-          if (!collegeName)
-            return res.status(400).send({ status: false, msg: "invalid request parameters . Please Provide college name" })
-      
-      
-          let collegeDetails = await collegemodel.findOne({ name: collegeName })
-          if (!collegeDetails)
-            res.status(400).send({ status: false, msg: "No College Found" })
-      
-          let internDetails = await internmodel.find({ collegeId: collegeDetails._id })
-          if (internDetails.length === 0) {
-            res.status(400).send({ status: false, msg: "No interns were Found" })
-          }
-          let collegeData = {
-            name: collegeDetails.name,
-            fullName: collegeDetails.fullName,
-            logoLink: collegeDetails.logoLink
-          }
-          for (let i = 0; i < internDetails.length; i++) {
-            result = {
-              _id:internDetails[i]._id,
-              name: internDetails[i].name,
-              email: internDetails[i].email,
-              mobile: internDetails[i].mobile
-            }
-            
-            interns.push(result)
-          }
-          
-          collegeData["interns"] = interns
-          let x = interns.length
-          console.log(collegeData)
-          res.status(200).send({ status: true,total:x, data: collegeData })
-        }
-        catch (error) {
-          console.log(error)
-          res.status(500).send({ status: false, msg: error.message })
-        }
-      }
+const getBooksbyQuery = async function (req, res) {
+  try{
+    const query = req.query
+    const filter ={
+      ...query,
+      isDeleted : false
+    } // store conditions in filter variable
+const findBooks = await bookModel.find(filter).select({title:1,excerpt:1,userId:1,category:1,releasedAt:1,reviews:1}).sort({title:1})
+if(findBooks.length === 0){
+return res.status(404).send({status:true, message:"no books found."})}
+res.status(200).send({status:true, message:"books list",data:findBooks}) 
+} 
+catch (err) {
+return res.status(500).send({ status: true, ERROR: err.message })
+ 
+}
+}
+//////////////////////////////////////////////////////////////////////////////////////////
+const bookDetails = async function (req, res) {
+  try {
+let bookId = req.params.bookId;
+if (!bookId) {return res.status(400).send({ msg: "please input book ID." })}
+let bookDetails = await bookModel.findById(bookId);
+if (!bookDetails)return res.status(404).send({ status: false, msg: "No such book exists" });
+let data = JSON.parse(JSON.stringify(bookDetails)) // DEEP CLONNING 
+const book_id = bookDetails._id
+let reviews = await reviewModel.find({bookId:book_id}).select({_id:true,bookId:true,reviewedBy:true,reviewedAt:true,rating:true,review:true})
+if(bookDetails.isDeleted==true)return res.status(404).send({ status: false, msg: "Book is already deleted" });
+data={_id:bookDetails._id,title:bookDetails.title,excerpt:bookDetails.excerpt,userId:bookDetails.userId,category:bookDetails.category,subcategory:bookDetails.subcategory,isDeleted:bookDetails.isDeleted,reviews:bookDetails.reviews,releasedAT:bookDetails.releasedAT,createdAt:bookDetails.createdAt,updatedAt:bookDetails.updatedAt}
+data.reviewsData = [...reviews]
+ res.status(200).send({status:true,msg:"book list",data:data});
+  }catch (err) {
+      console.log("This is the error.", err.message)
+      res.status(500).send({ msg: "error", error: err.message })
+  }
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+const updateBooks = async function (req, res)  {
+try {
+let Id = req.params.bookId
+let books = await bookModel.findById(Id)
+if (!isValid(books)){
+return res.status(404).send({status:false, msg : "Books not found"})
+}
+if (books.isDeleted == false) {
 
-module.exports.createIntern=createIntern;
-module.exports.getCollegeDetails=getCollegeDetails
+let newTitle = req.body.title
+let newExcerpt = req.body.excerpt
+let newISBN = req.body.ISBN
+let newCategory = req.body.Category
+let newSubCategory = req.body.subcategory
+let newReview = req.body.review
+let newReleasedAt = req.body.releasedAt
 
+let updatedBook = await bookModel.findByIdAndUpdate({ _id:Id },
+{
+$set: { title: newTitle, excerpt: newExcerpt,  ISBN:newISBN, releasedAt:newReleasedAt },
+$push: { review: newReview, category: newCategory, subcategory: newSubCategory }
+},
+{ new: true })
+console.log(updatedBook)
+return res.status(200).send({ Status: true, data: updatedBook })
+}
+} catch (error) {
+  res.status(500).send({ status: false, msg: error.message })
+}
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+const deleteById = async (req, res) => {
+
+  try {
+let Id = req.params.bookId
+let ifExists = await bookModel.findById(Id)
+if (!ifExists) {
+          return res.status(404).send({ Status: false, msg: "Data Not Found" })
+     }
+if (ifExists.isDeleted !== true) {
+let deleteBook = await bookModel.findByIdAndUpdate({ _id: Id }, { $set: { isDeleted: true, deletedAt: Date.now() } }, { new: true })
+   return res.status(200).send()
+} else {
+  return res.status(400).send({ status: false, msg: "already deleted" })
+  }
+} catch (error) {
+   res.status(500).send({ Err: error.message })
+  }
+
+
+}
+
+module.exports.createBook =createBook ;
+module.exports.getBooksbyQuery=getBooksbyQuery
+module.exports.updateBooks=updateBooks
+module.exports.deleteById=deleteById
+module.exports.bookDetails=bookDetails
