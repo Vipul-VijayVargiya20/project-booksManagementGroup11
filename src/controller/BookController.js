@@ -17,9 +17,7 @@ try {
         }
        let { title, excerpt, userId, ISBN, category, subcategory, reviews, ReleasedAt } = req.body
 
-        // if (userId.toString() !== req.loggedInUser) {
-        //     return res.status(403).send({ satus: false, msg: `Unauthorized access! Owner info doesn't match` })
-        // }
+        
         if (!validate.isValid(title)) {
             return res.status(400).send({ status: false, message: "title Is Required" })
         }
@@ -76,6 +74,8 @@ try {
 const getBooksbyQuery = async function (req, res) {
   try{
     const query = req.query
+    if (Object.keys(query).length === 0) {
+        return res.status(400).send({ status: false, msg: "no book found" })}
     const filter ={
       ...query,
       isDeleted : false
@@ -84,7 +84,7 @@ const findBooks = await bookModel.find(filter).select({title:1,excerpt:1,userId:
 
 if(findBooks.length === 0){
 return res.status(404).send({status:true, message:"no books found."})}
-res.status(200).send({status:true, message:"books list",data:findBooks}) 
+res.status(200).send({status:true,total:findBooks.length, message:"books list",data:findBooks}) 
  } 
 catch (err) {
 return res.status(500).send({ status: true, ERROR: err.message })
@@ -105,7 +105,7 @@ let reviews = await reviewModel.find({bookId:book_id}).select({_id:true,bookId:t
 if(bookDetails.isDeleted==true)return res.status(404).send({ status: false, msg: "Book is already deleted" });
 data={_id:bookDetails._id,title:bookDetails.title,excerpt:bookDetails.excerpt,userId:bookDetails.userId,category:bookDetails.category,subcategory:bookDetails.subcategory,isDeleted:bookDetails.isDeleted,reviews:bookDetails.reviews,releasedAT:bookDetails.releasedAT,createdAt:bookDetails.createdAt,updatedAt:bookDetails.updatedAt}
 data.reviewsData = [...reviews]
- res.status(200).send({status:true,msg:"book list",data:data});
+ res.status(200).send({status:true,total:reviews.length,msg:"book list",data:data});
   }catch (err) {
       console.log("This is the error.", err.message)
       res.status(500).send({ msg: "error", error: err.message })
@@ -128,7 +128,7 @@ let newCategory = req.body.Category
 let newSubCategory = req.body.subcategory
 let newReview = req.body.review
 let newReleasedAt = req.body.ReleasedAt
-
+if (!isValid(newTitle)||(!isValid(newISBN)||(!isValid(newExcerpt))))return res.status(400).send({ status: false, msg: "please dont put empty value in the body ?" });
 let updatedBook = await bookModel.findByIdAndUpdate({ _id:Id },
 {
 $set: { title: newTitle, excerpt: newExcerpt,  ISBN:newISBN, ReleasedAt:newReleasedAt },
