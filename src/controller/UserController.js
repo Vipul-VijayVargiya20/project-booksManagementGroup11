@@ -22,7 +22,9 @@ return res.status(400).send({ status: false, msg: "Please Enter some data" })
 if (!isValid(data.title)) {
 return res.status(400).send({ status: false, msg: "title is Required" })
 }
-        
+   if((['Mr','Mrs','Miss'].indexOf(data.title)=== -1)){
+       return res.status(400).send({ status: false, msg: "please provide valid title" });
+   }
 if (!isValid(data.name)) {
 return res.status(400).send({ status: false, msg: "name is Required" })
 }
@@ -46,12 +48,7 @@ if (phoneCheck == false)
 if (!isValid(data.phone))
  return res.status(400).send({ status: false, msg: "phone is required" })
  
-//  let alreadyExist = await UserModel.findOne({ phone: data.phone })
-// if (alreadyExist) {
-// return res.status(400).send({ status: false, msg: "phone already exist" })
-// }
-
-if (isValid(data.email))
+ if (isValid(data.email))
 if (!(/^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/.test(data.email)))
  return res.status(400).send({ status: false, msg: "is not a valid email" })
 if (!isValid(data.email))

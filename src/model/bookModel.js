@@ -1,51 +1,66 @@
-const mongoose = require('mongoose')
-const ObjectId = mongoose.Schema.Types.ObjectId
+const mongoose = require('mongoose');
 const book = new mongoose.Schema({
-     title: {
-            type: String,
-            required: true,
-            unique: true,
-            trim: true
-        },
-        excerpt: {
-            type: String,
-            required: true,
-            trim: true
-        },
-        userId: {
-            type: ObjectId,
-            required: true,
-            ref: "User",
-            trim: true
-        },
-        ISBN: {
-            type: String,
-            required: true,
-            unique: true,
-            trim: true
-        },
-        category: {
-            type: String,
-            required: true,
-            trim: true
-        },
-        subcategory: {
-            type: String,
-            required: true,
-            trim: true
-        },
-        reviews: {
-            type: Number,
-            default: 0,
-            comment: {type:Number}
-        },
-        isDeleted: { type: Boolean, default: false },
-        deletedAt: { type: Date },
-        ReleasedAt: {
-            type: Date,
-            required: true,
-        }
+
+    title: {
+        type: String,
+        required: [true,'title is required'],
+        trim: true,
+        unique: true,
+        lowercase:true
+    },
     
-    
-    }, { timestamps: true })
+    bookCover : {
+        type: String,
+    },
+
+    excerpt: {
+        type: String,
+        trim: true,
+        required: [true,'excerpt is required']
+    },
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: [true,'userId is required'],
+        trim: true,
+        refs: 'User'
+    },
+    ISBN: {
+        type: String,
+        requireed: [true,'ISBN is required'],
+        trim: true,
+        unique: true
+    },
+    category: {
+        type: String,
+        trim: true,
+        required: [true,'category is required']
+    },
+    subcategory: {
+        type: [],
+        trim: true,
+        required: [true,'subcategory is required']
+    },
+    reviews: {
+        type: Number,
+        default: 0,
+        //comment: Holds number of reviews of this book
+    },
+    deletedAt: {
+        type: Date,
+        default: null
+        //when the document is deleted
+    },
+    isDeleted: {
+        type: Boolean,
+        default: false
+    },
+    releasedAt: {
+        type: Date,
+        required: [true,"Release date is required"]// format("YYYY-MM-DD")
+    },
+
+
+
+}, { timestamps: true })
+
 module.exports = mongoose.model('Createbooks', book)
